@@ -1,10 +1,10 @@
-{ pkgs
-
-# Note, this should be "the standard library" + HM extensions.
-, lib ? import ../modules/lib/stdlib-extended.nix pkgs.lib }:
-
+nixpkgs:
+{
+  # Note, this should be "the standard library" + HM extensions.
+  pkgs
+, lib
+}:
 let
-
   nmdSrc = pkgs.fetchFromGitLab {
     name = "nmd";
     owner = "rycee";
@@ -27,10 +27,11 @@ let
   };
 
   hmModulesDocs = nmd.buildModulesDocs {
-    modules = import ../modules/modules.nix {
-      inherit lib pkgs;
-      check = false;
-    } ++ [ scrubbedPkgsModule ];
+    modules = import ../modules/modules.nix nixpkgs
+      {
+        inherit lib pkgs;
+        check = false;
+      } ++ [ scrubbedPkgsModule ];
     moduleRootPaths = [ ./.. ];
     mkModuleUrl = path:
       "https://github.com/rycee/home-manager/blob/master/${path}#blob-path";
@@ -54,7 +55,8 @@ let
     '';
   };
 
-in {
+in
+{
   inherit nmdSrc;
 
   options = {
